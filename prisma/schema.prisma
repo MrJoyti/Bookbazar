@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String           @id @default(cuid())
+  name          String
+  email         String           @unique
+  passwordHash  String
+  university    String
+  role          String           @default("STUDENT")
+  status        String           @default("ACTIVE")
+  balance       Int              @default(1500)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  adminActions  AdminActionLog[] @relation("AdminActions")
+  listings      Book[]           @relation("SellerBooks")
+  cartItems     CartItem[]
+  sentMessages  Message[]
+  buyerThreads  MessageThread[]  @relation("BuyerThreads")
+  sellerThreads MessageThread[]  @relation("SellerThreads")
+  notifications Notification[]
+  buyerOrders   Order[]          @relation("BuyerOrders")
+  sellerOrders  Order[]          @relation("SellerOrders")
+  reports       Report[]         @relation("ReporterReports")
+  wishlistItems WishlistItem[]
+}
+
+model PasswordResetOtp {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  otpHash     String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  verified    Boolean  @default(false)
+  resendAfter DateTime
+
+  @@index([expiresAt])
+}
+
+model Book {
+  id             String          @id @default(cuid())
+  title          String
+  author         String
+  edition        String?
+  price          Int
+  condition      String
+  rating         Int?
+  coverColor     String?
+  coverImage     String?
+  category       String
+  description    String
+  university     String
+  isbn           String?
+  status         String          @default("AVAILABLE")
+  sellerId       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  seller         User            @relation("SellerBooks", fields: [sellerId], references: [id], onDelete: Cascade)
+  cartItems      CartItem[]
+  messageThreads MessageThread[]
+  orders         Order[]
+  reports        Report[]
+  wishlistItems  WishlistItem[]
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([status])
+  @@index([university])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  createdAt DateTime @default(now())
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+  @@index([bookId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  createdAt DateTime @default(now())
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+  @@index([bookId])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  bookId        String
+  buyerId       String
+  sellerId      String
+  price         Int
+  status        String   @default("PENDING")
+  paymentMethod String   @default("BALANCE")
+  bkashNumber   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  book          Book     @relation(fields: [bookId], references: [id])
+  buyer         User     @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller        User     @relation("SellerOrders", fields: [sellerId], references: [id])
+
+  @@index([bookId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+}
+
+model MessageThread {
+  id        String    @id @default(cuid())
+  bookId    String
+  buyerId   String
+  sellerId  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+  book      Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  buyer     User      @relation("BuyerThreads", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller    User      @relation("SellerThreads", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, buyerId, sellerId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  threadId  String
+  senderId  String
+  text      String
+  createdAt DateTime      @default(now())
+  sender    User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([senderId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+}
+
+model Report {
+  id         String    @id @default(cuid())
+  bookId     String
+  reporterId String?
+  reason     String
+  status     String    @default("PENDING")
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  book       Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  reporter   User?     @relation("ReporterReports", fields: [reporterId], references: [id])
+
+  @@index([bookId])
+  @@index([reporterId])
+  @@index([status])
+}
+
+model AdminActionLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String?
+  note       String?
+  createdAt  DateTime @default(now())
+  admin      User     @relation("AdminActions", fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([targetType])
+}
+
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}

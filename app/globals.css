@@ -1,0 +1,364 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   BookBazar — 90s Newspaper Design System  (v3 — hyper-animated)
+   ============================================================ */
+
+:root {
+  --paper: #F6EFE5;
+  --beige: #EFE3CF;
+  --card: #FAF5ED;
+  --vintage: #6A4A3C;
+  --ink: #2B2118;
+  --gold: #C8A96A;
+  --olive: #77815C;
+  --text: #2B2118;
+  --walnut: #3B2A22;
+  --muted-red: #8D5A4A;
+  --bkash: #e2136e;
+  --bkash-dark: #b80e55;
+  --bkash-light: #fce4ef;
+  --bkash-glow: rgba(226, 19, 110, 0.35);
+}
+
+* { border-color: rgba(106, 74, 60, 0.15); }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--paper);
+  color: var(--text);
+  background-image:
+    /* Diagonal morning sun glow from top left */
+    radial-gradient(circle at 15% 15%, rgba(200, 169, 106, 0.12) 0%, transparent 60%),
+    /* Soft warm light from top right */
+    radial-gradient(circle at 85% 20%, rgba(119, 129, 92, 0.08) 0%, transparent 55%),
+    /* Micro paper grain noise */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"),
+    /* Paper fibers overlay */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'%3E%3Cpath d='M12,24 Q45,15 75,35 T135,55' fill='none' stroke='%233b2a22' stroke-width='0.45' stroke-opacity='0.02'/%3E%3Cpath d='M290,40 Q310,130 270,190 T330,250' fill='none' stroke='%233b2a22' stroke-width='0.45' stroke-opacity='0.025'/%3E%3Cpath d='M60,280 Q130,260 190,330' fill='none' stroke='%233b2a22' stroke-width='0.45' stroke-opacity='0.02'/%3E%3Cpath d='M210,110 Q170,50 110,70' fill='none' stroke='%236a4a3c' stroke-width='0.5' stroke-opacity='0.015'/%3E%3C/svg%3E");
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (pointer: fine) {
+  .bookmark-cursor {
+    position: fixed; top: 0; left: 0;
+    width: 22px; height: 30px;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-4px, -4px);
+    will-change: transform;
+  }
+}
+
+.hairline {
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  height: 1px;
+}
+
+.newspaper-divider {
+  border-top: 1px solid var(--gold);
+  border-bottom: 3px double var(--gold);
+  height: 6px;
+  margin: 1.5rem 0;
+}
+
+.shadow-stack {
+  box-shadow: 0 1px 0 var(--card), 0 2px 0 var(--beige), 0 6px 12px -6px rgba(43,33,24,0.2);
+}
+.shadow-lift {
+  box-shadow: 0 2px 0 var(--card), 0 4px 0 var(--beige), 0 12px 24px -8px rgba(43,33,24,0.3);
+}
+.shadow-bkash {
+  box-shadow: 0 4px 20px -4px var(--bkash-glow), 0 0 0 1px var(--bkash);
+}
+
+.page-fold-overlay { transform-origin: top right; }
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes ink-press {
+  0%   { opacity: 0; transform: translateY(-6px) scaleY(0.92); }
+  60%  { opacity: 1; transform: translateY(2px) scaleY(1.02); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+@keyframes typewriter { from { width: 0; } to { width: 100%; } }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes scale-up {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-16px) scaleY(0.94); }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+@keyframes stamp {
+  0%   { opacity: 0; transform: scale(2.5) rotate(-15deg); }
+  60%  { opacity: 1; transform: scale(0.92) rotate(2deg); }
+  80%  { transform: scale(1.04) rotate(-1deg); }
+  100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position: 800px 0; }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.85; }
+  94% { opacity: 1; }
+  97% { opacity: 0.9; }
+  98% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes count-pop {
+  0%   { transform: scale(0.6) rotate(-10deg); opacity: 0; }
+  80%  { transform: scale(1.1) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ── bKash phone vibrate (realistic) ── */
+@keyframes bkash-vibrate {
+  0%,100% { transform: rotate(0deg) translateX(0); }
+  10%     { transform: rotate(-2deg) translateX(-2px); }
+  20%     { transform: rotate(2deg)  translateX(2px); }
+  30%     { transform: rotate(-1.5deg) translateX(-1px); }
+  40%     { transform: rotate(1.5deg) translateX(1px); }
+  50%     { transform: rotate(-1deg) translateX(-1px); }
+  60%     { transform: rotate(1deg) translateX(1px); }
+  70%     { transform: rotate(-0.5deg) translateX(0); }
+}
+
+/* ── bKash pink glow pulse ── */
+@keyframes bkash-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--bkash-glow), 0 0 0 1px var(--bkash); }
+  50%      { box-shadow: 0 0 24px 6px var(--bkash-glow), 0 0 0 2px var(--bkash); }
+}
+
+/* ── bKash processing spinner ── */
+@keyframes bkash-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── bKash payment wave ── */
+@keyframes bkash-wave {
+  0%   { transform: scaleX(0); transform-origin: left; opacity: 1; }
+  100% { transform: scaleX(1); transform-origin: left; opacity: 0.8; }
+}
+
+/* ── Success confetti drops ── */
+@keyframes confetti-1 { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(120px) rotate(540deg) translateX(30px); opacity: 0; } }
+@keyframes confetti-2 { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(100px) rotate(-360deg) translateX(-40px); opacity: 0; } }
+@keyframes confetti-3 { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(140px) rotate(720deg) translateX(60px); opacity: 0; } }
+@keyframes confetti-4 { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(90px) rotate(-480deg) translateX(-20px); opacity: 0; } }
+
+/* ── Ink ripple (click effect) ── */
+@keyframes ink-ripple {
+  0%   { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* ── Cart remove ── */
+@keyframes cart-remove {
+  0%   { opacity: 1; transform: translateX(0) scale(1); max-height: 100px; }
+  100% { opacity: 0; transform: translateX(64px) scale(0.88); max-height: 0; padding: 0; margin: 0; }
+}
+
+/* ── Progress bar fill ── */
+@keyframes progress-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ── Number ticker ── */
+@keyframes number-tick {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Heartbeat ── */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%       { transform: scale(1.15); }
+  28%       { transform: scale(1); }
+  42%       { transform: scale(1.1); }
+  70%       { transform: scale(1); }
+}
+
+/* ── Glide in up ── */
+@keyframes glide-up {
+  from { opacity: 0; transform: translateY(40px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Ink drip ── */
+@keyframes ink-drip {
+  0%   { height: 0; opacity: 0; }
+  30%  { opacity: 1; }
+  100% { height: 32px; opacity: 0; }
+}
+
+/* ============================================================
+   ANIMATION UTILITY CLASSES
+   ============================================================ */
+
+.animate-ink-press   { animation: ink-press   0.4s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-fade-up     { animation: fade-up     0.5s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-fade-in     { animation: fade-in     0.3s ease both; }
+.animate-scale-up    { animation: scale-up    0.35s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-slide-right { animation: slide-in-right 0.4s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-slide-left  { animation: slide-in-left  0.4s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-slide-down  { animation: slide-down  0.35s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-stamp       { animation: stamp       0.6s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-badge-pop   { animation: badge-pop   0.4s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-stagger-in  { animation: stagger-in  0.45s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-float       { animation: float       3s ease-in-out infinite; }
+.animate-flicker     { animation: flicker     8s linear infinite; }
+.animate-count-pop   { animation: count-pop   0.35s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-glide-up    { animation: glide-up    0.55s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-heartbeat   { animation: heartbeat   1.4s ease-in-out infinite; }
+
+.animate-bkash-vibrate { animation: bkash-vibrate 0.6s ease-in-out; }
+.animate-bkash-glow    { animation: bkash-glow    2s ease-in-out infinite; }
+.animate-bkash-spin    { animation: bkash-spin    0.8s linear infinite; }
+
+/* Delay helpers */
+.delay-75  { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+
+/* ---- bKash brand utilities ---- */
+.bg-bkash       { background-color: var(--bkash); }
+.text-bkash     { color: var(--bkash); }
+.border-bkash   { border-color: var(--bkash); }
+.bg-bkash-light { background-color: var(--bkash-light); }
+.glow-bkash     { box-shadow: 0 0 20px 4px var(--bkash-glow); }
+
+/* ---- Skeleton ---- */
+.skeleton {
+  background: linear-gradient(90deg, var(--beige) 25%, #fff 50%, var(--beige) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* ---- Cart item slide-out ---- */
+.cart-removing { animation: cart-remove 0.32s cubic-bezier(.55,.06,.68,.19) forwards; }
+
+/* ---- Notification badge pulse ring ---- */
+.pulse-ring { position: relative; }
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--vintage);
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* ---- Headline flicker ---- */
+.headline-flicker { animation: flicker 10s linear infinite; }
+
+/* ---- bKash selected card glow ---- */
+.bkash-selected {
+  border: 2px solid var(--bkash) !important;
+  background: linear-gradient(135deg, #fff0f6, #fce4ef) !important;
+  animation: bkash-glow 2.5s ease-in-out infinite;
+}
+
+/* ---- Progress bar animated line ---- */
+.progress-bar-fill {
+  animation: progress-fill 0.6s cubic-bezier(.22,.68,0,1.2) forwards;
+}
+
+/* ---- Ink ripple on click ---- */
+.ink-ripple-container { position: relative; overflow: hidden; }
+.ink-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.12);
+  animation: ink-ripple 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ---- bKash logo animation ---- */
+@keyframes bkash-logo-pop {
+  0%   { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+  70%  { transform: scale(1.1) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.animate-bkash-logo { animation: bkash-logo-pop 0.5s cubic-bezier(.22,.68,0,1.2) both; }
+
+/* ---- Divider line draw ── */
+@keyframes draw-line {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.draw-line { animation: draw-line 0.8s ease forwards; }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
